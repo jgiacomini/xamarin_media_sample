@@ -1,2 +1,6 @@
 # xamarin_media_sample
-Un set d'exemple sur la gestion des images, des sons, et des vidéos en Xamarin
+
+Un exemple de comment fonctionne les images, des sons, et des vidéos :
+* [x]  iOS (Jérôme Giacomini)
+* [ ]  Android (Maxime Frappat) 
+* [ ]  UWP (Michaël Fery)
