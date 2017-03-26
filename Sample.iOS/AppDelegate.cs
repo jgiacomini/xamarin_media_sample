@@ -17,8 +17,6 @@ namespace Sample.iOS
             set;
         }
 
-
-
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
 			// On précise que la fenêtre prend toute la place de l’écran
