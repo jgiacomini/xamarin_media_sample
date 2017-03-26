@@ -7,7 +7,7 @@ namespace Sample.iOS
 	public class MainViewController : UIViewController
 	{
 
-		private UIButton _imageButton;
+		private UIButton _loadImageButton;
 		private UIButton _soundButton;
 		private UIButton _videoButton;
 
@@ -20,10 +20,10 @@ namespace Sample.iOS
 		}
 		public override void ViewDidLoad()
 		{
-			_imageButton = UIButton.FromType(UIButtonType.System);
-			_imageButton.SetTitle("Images", UIControlState.Normal);
-			_imageButton.TouchUpInside += _imageButton_TouchUpInside;
-			_imageButton.Frame = new CGRect(10, 10, View.Bounds.Width, 40);
+			_loadImageButton = UIButton.FromType(UIButtonType.System);
+			_loadImageButton.SetTitle("Charger une image", UIControlState.Normal);
+			_loadImageButton.TouchUpInside += _imageButton_TouchUpInside;
+			_loadImageButton.Frame = new CGRect(10, 10, View.Bounds.Width, 40);
 
 
 			_soundButton = UIButton.FromType(UIButtonType.System);
@@ -38,12 +38,12 @@ namespace Sample.iOS
 			_videoButton.Frame = new CGRect(10, 110, View.Bounds.Width, 40);
 
 
-			View.AddSubviews(_imageButton, _soundButton, _videoButton);
+			View.AddSubviews(_loadImageButton, _soundButton, _videoButton);
 		}
 
 		void _imageButton_TouchUpInside(object sender, EventArgs e)
 		{
-			this.NavigationController.PushViewController(new ImageSampleViewController(), true);
+			this.NavigationController.PushViewController(new LoadImageSampleViewController(), true);
 		}
 
 		void _soundButton_TouchUpInside(object sender, EventArgs e)
