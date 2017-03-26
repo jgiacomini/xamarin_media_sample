@@ -21,10 +21,9 @@ namespace Sample.iOS
 		public override void ViewDidLoad()
 		{
 			_loadImageButton = UIButton.FromType(UIButtonType.System);
-			_loadImageButton.SetTitle("Charger une image", UIControlState.Normal);
+			_loadImageButton.SetTitle("Charger et sauvegarder une image", UIControlState.Normal);
 			_loadImageButton.TouchUpInside += _imageButton_TouchUpInside;
 			_loadImageButton.Frame = new CGRect(10, 10, View.Bounds.Width, 40);
-
 
 			_soundButton = UIButton.FromType(UIButtonType.System);
 			_soundButton.SetTitle("Son", UIControlState.Normal);
@@ -43,7 +42,7 @@ namespace Sample.iOS
 
 		void _imageButton_TouchUpInside(object sender, EventArgs e)
 		{
-			this.NavigationController.PushViewController(new LoadImageSampleViewController(), true);
+			this.NavigationController.PushViewController(new ImageSampleViewController(), true);
 		}
 
 		void _soundButton_TouchUpInside(object sender, EventArgs e)

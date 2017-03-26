@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 namespace Sample.iOS
 {
-	public class LoadImageSampleViewController : UIViewController
+	public class ImageSampleViewController : UIViewController
 	{
 		private UIImagePickerController _imagePicker;
 		private UIImageView _imageViewFromImagePicker;
 
-		public LoadImageSampleViewController()
+		public ImageSampleViewController()
 		{
 			Title = "Image sample";
 			View.BackgroundColor = UIColor.White;
