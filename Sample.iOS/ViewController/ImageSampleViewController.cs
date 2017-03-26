@@ -15,14 +15,12 @@ namespace Sample.iOS
 			this.EdgesForExtendedLayout = UIRectEdge.None;
 		}
 
-
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
 			UIImageView imageView = new UIImageView(View.Frame);
 			imageView.Image = UIImage.FromBundle("MonImage.png");
-
 
 			UIImageView imageViewUrl = null;
 			UIImage imageURL = null;
