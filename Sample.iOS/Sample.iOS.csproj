@@ -91,7 +91,7 @@
     <Compile Include="ViewController\MainViewController.cs" />
     <Compile Include="ViewController\SoundSampleViewController.cs" />
     <Compile Include="ViewController\VideoSampleViewController.cs" />
-    <Compile Include="ViewController\LoadImageSampleViewController.cs" />
+    <Compile Include="ViewController\ImageSampleViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
@@ -110,6 +110,8 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\MonImage.jpg" />
+    <BundleResource Include="Resources\musique.mp3" />
+    <BundleResource Include="Resources\sound.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

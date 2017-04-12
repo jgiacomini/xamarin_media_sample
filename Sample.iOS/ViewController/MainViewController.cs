@@ -23,18 +23,18 @@ namespace Sample.iOS
 			_loadImageButton = UIButton.FromType(UIButtonType.System);
 			_loadImageButton.SetTitle("Charger et sauvegarder une image", UIControlState.Normal);
 			_loadImageButton.TouchUpInside += _imageButton_TouchUpInside;
-			_loadImageButton.Frame = new CGRect(10, 10, View.Bounds.Width, 40);
+			_loadImageButton.Frame = new CGRect(10, 10, View.Bounds.Width - 20, 40);
 
 			_soundButton = UIButton.FromType(UIButtonType.System);
 			_soundButton.SetTitle("Son", UIControlState.Normal);
 			_soundButton.TouchUpInside += _soundButton_TouchUpInside;
-			_soundButton.Frame = new CGRect(10, 60, View.Bounds.Width, 40);
+			_soundButton.Frame = new CGRect(10, 60, View.Bounds.Width - 20, 40);
 
 
 			_videoButton = UIButton.FromType(UIButtonType.System);
 			_videoButton.SetTitle("Vidéo", UIControlState.Normal);
 			_videoButton.TouchUpInside += _videoButton_TouchUpInside;
-			_videoButton.Frame = new CGRect(10, 110, View.Bounds.Width, 40);
+			_videoButton.Frame = new CGRect(10, 110, View.Bounds.Width - 20, 40);
 
 
 			View.AddSubviews(_loadImageButton, _soundButton, _videoButton);
