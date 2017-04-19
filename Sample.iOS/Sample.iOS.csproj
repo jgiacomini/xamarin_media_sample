@@ -88,10 +88,10 @@
     <Compile Include="AppDelegate.cs" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewController\ImageSampleViewController.cs" />
     <Compile Include="ViewController\MainViewController.cs" />
     <Compile Include="ViewController\SoundSampleViewController.cs" />
     <Compile Include="ViewController\VideoSampleViewController.cs" />
-    <Compile Include="ViewController\LoadImageSampleViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
@@ -105,9 +105,7 @@
   <ItemGroup>
     <Content Include="Entitlements.plist" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewController\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BundleResource Include="Resources\MonImage.jpg" />
   </ItemGroup>
