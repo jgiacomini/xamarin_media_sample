@@ -143,7 +143,7 @@ namespace Sample.iOS
         {
             base.ViewWillDisappear(animated);
             //Quand le viewCOntroller n'est plus affiché on stop la musique
-            AudioManager.Instance.StopAndClean();
+            AudioManager.Instance.StopAndDispose();
             FinishedPlaying();
             AudioManager.Instance.FinishedPlaying -= FinishedPlaying;
         }
