@@ -1,6 +1,7 @@
 ﻿using System;
 using AVFoundation;
 using Foundation;
+using UIKit;
 
 namespace Sample.iOS.Utils
 {
@@ -13,9 +14,6 @@ namespace Sample.iOS.Utils
 		#region Champs
 		private AVAudioPlayer _musicPlayer;
         private string _currentUrl;
-        #endregion
-
-        #region Contstantes 
         private float _currentVolume = 1.0f;
         private nint _currentNumbersOfLoops = -1;
         #endregion
@@ -74,7 +72,7 @@ namespace Sample.iOS.Utils
 			set
 			{
                 _currentNumbersOfLoops = value;
-                if (_musicPlayer == null)
+                if (_musicPlayer != null)
                 {
                     _musicPlayer.NumberOfLoops = _currentNumbersOfLoops;
                 }
@@ -113,11 +111,12 @@ namespace Sample.iOS.Utils
 
 		public void LoadFromUrl(string url)
 		{
+            
             // Si un player existe on le supprime.
-			StopAndClean();
+			StopAndDispose();
 
-            // On stoque l'url de la musique courante
-            _currentUrl = url;
+			// On stoque l'url de la musique courante
+			_currentUrl = url;
 
             // On transforme l'url en NSURL
 			NSUrl musicURL = NSUrl.FromString(url);
@@ -125,15 +124,19 @@ namespace Sample.iOS.Utils
             // On charge le player en fonction de cette URL
 			_musicPlayer = AVAudioPlayer.FromUrl(musicURL);
 			_musicPlayer.Volume = _currentVolume;
+
 			_musicPlayer.FinishedPlaying += _musicPlayer_FinishedPlaying;
-			
+
+			//Précharge la musique en mémoire
+			_musicPlayer.PrepareToPlay();
+
             // Si le nombre de boucle est égale à -1 la musique est jouée en boucle
             _musicPlayer.NumberOfLoops = _currentNumbersOfLoops;
 		}
 
         void _musicPlayer_FinishedPlaying(object sender, AVStatusEventArgs args)
         {
-            StopAndClean();
+            Stop();
 
             if (FinishedPlaying != null)
             {
@@ -141,14 +144,15 @@ namespace Sample.iOS.Utils
             }
         }
 
-        public void StopAndClean()
+        public void StopAndDispose()
 		{
             
 			if (_musicPlayer != null)
 			{
                 // On stoppe la musique courante
 				_musicPlayer.Stop();
-                //Puis on détruit le player
+
+				//Puis on libère les ressources du lecteur audio
 				_musicPlayer.Dispose();
                 _musicPlayer = null;
 			}
