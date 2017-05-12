@@ -1,23 +1,24 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using AudioToolbox;
 using AVFoundation;
 using CoreGraphics;
 using Foundation;
 using UIKit;
+
 namespace Sample.iOS
 {
 	public class SoundSampleViewController : UIViewController
 	{
 		private AVAudioPlayer _musicPlayer;
-
-
 		private UIButton _playButton;
 		private UIButton _pauseButton;
 		private UIButton _stopButton;
 		private UISlider _volumeSlider;
 		private UILabel _numberOfLoopsLabel;
 		private UIStepper _numberOfLoopsSteppers;
+        private UIButton _loadPlayerFromDataButton;
 
 		private float _defaultVolume = 1.0f;
 
@@ -27,7 +28,7 @@ namespace Sample.iOS
 
 			View.BackgroundColor = UIColor.White;
 			this.EdgesForExtendedLayout = UIRectEdge.None;
-			TestMusic();
+			LoadPlayerFromUrl();
 
 			// Initialize Audio
 			var session = AVAudioSession.SharedInstance();
@@ -63,12 +64,18 @@ namespace Sample.iOS
 			_numberOfLoopsSteppers.ValueChanged += _numberOfLoopsSteppers_ValueChanged;
 			_numberOfLoopsSteppers.Frame = new CGRect(View.Bounds.Width - 20 - 80, 200, 80, 40);
 
+			_loadPlayerFromDataButton = UIButton.FromType(UIButtonType.System);
+			_loadPlayerFromDataButton.SetTitle("Charger musique depuis un tableau d'octets", UIControlState.Normal);
+            _loadPlayerFromDataButton.TouchUpInside += _loadPlayerFromDataButton_TouchUpInside;
+			_loadPlayerFromDataButton.Frame = new CGRect(10, 240, View.Bounds.Width - 20, 40);
+
 			View.AddSubviews(_playButton, 
 			                 _pauseButton,
 			                 _stopButton,
 			                 _volumeSlider,
 			                 _numberOfLoopsSteppers,
-			                _numberOfLoopsLabel);
+			                 _numberOfLoopsLabel,
+                             _loadPlayerFromDataButton);
 		}
 
 		void _volumeSlider_ValueChanged(object sender, EventArgs e)
@@ -86,10 +93,10 @@ namespace Sample.iOS
 			_musicPlayer.Pause();
 		}
 
-		void _stopButton_TouchUpInside(object sender, EventArgs e)
+		async void _stopButton_TouchUpInside(object sender, EventArgs e)
 		{
 			_musicPlayer.Stop();
-			TestSoundAsync();
+			await TestSoundAsync();
 		}
 
 		void _numberOfLoopsSteppers_ValueChanged(object sender, EventArgs e)
@@ -98,13 +105,42 @@ namespace Sample.iOS
 			_musicPlayer.NumberOfLoops = (nint)_numberOfLoopsSteppers.Value;
 		}
 
-		void TestMusic()
+        void _loadPlayerFromDataButton_TouchUpInside(object sender, EventArgs e)
+        {
+            _musicPlayer?.Stop();
+            _musicPlayer?.Dispose();
+            LoadPlayerFromData();
+        }
+
+		void LoadPlayerFromUrl()
 		{
 			NSUrl musicURL = NSUrl.FromString("musique.mp3");
 			_musicPlayer = AVAudioPlayer.FromUrl(musicURL);
-			_musicPlayer.Volume = _defaultVolume;
+            _musicPlayer.Volume = _defaultVolume;
 			_musicPlayer.FinishedPlaying += delegate
 			{	
+				_musicPlayer.Dispose();
+				_musicPlayer = null;
+			};
+			_musicPlayer.NumberOfLoops = -1;
+		}
+
+		void LoadPlayerFromData()
+		{
+            var bytes = File.ReadAllBytes("musique.mp3");
+
+			using (NSData data = NSData.FromArray(bytes))
+			{
+				// Si celui arrive à se charger on crée l'image
+				if (data != null)
+				{
+                    _musicPlayer = AVAudioPlayer.FromData(data);
+				}
+			}
+
+			_musicPlayer.Volume = _defaultVolume;
+			_musicPlayer.FinishedPlaying += delegate
+			{
 				_musicPlayer.Dispose();
 				_musicPlayer = null;
 			};

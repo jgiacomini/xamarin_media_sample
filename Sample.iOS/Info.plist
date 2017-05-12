@@ -41,5 +41,10 @@
 	<string>Sample.iOS</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cette application nécessite l&apos;accès à votre album photo</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

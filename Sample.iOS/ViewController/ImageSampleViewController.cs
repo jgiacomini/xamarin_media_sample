@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -33,7 +35,8 @@ namespace Sample.iOS
 
 		void LoadFromBytesArray()
 		{
-			byte[] array = new byte[0];// Chargement du tableau d'octet
+			var bytes = File.ReadAllBytes("MonImage.jpg");
+
 			// Création de l'imageView
 			var imageViewFromBytesArray = new UIImageView();
 			UIImage image = null;
@@ -44,10 +47,10 @@ namespace Sample.iOS
 			var height = 50;
 
 			// On place l'image au centre de la vue princiaple
-			imageViewFromBytesArray.Frame = new CGRect(View.Frame.Width / 2 - width / 2, View.Frame.Height / 2 - height / 2, width, height);
+            imageViewFromBytesArray.Frame = new CGRect(View.Frame.Width / 2 - width / 2, (View.Frame.Height + 4 * height) / 2 - height / 2, width, height);
 
 			// Chargement d'un NSData à partir du tableau d'octet
-			using (NSData data = NSData.FromArray(array))
+			using (NSData data = NSData.FromArray(bytes))
 			{
 				// Si celui arrive à se charger on crée l'image
 				if (data != null)
@@ -70,10 +73,10 @@ namespace Sample.iOS
 
 			var imageViewFromURL = new UIImageView();
 			UIImage image = null;
-			imageViewFromURL.Frame = new CGRect(View.Frame.Width / 2 - width / 2, View.Frame.Height / 2 - height / 2, width, height);
+            imageViewFromURL.Frame = new CGRect(View.Frame.Width / 2 - width / 2, 100, width, height);
 
 			// Création de la chaîne de caractère contenant l'adresse de l'image
-			string uri = "http://xamarin.com/monkey.jpg";
+			string uri = "http://www.elfo.net/wp-content/uploads/2015/06/BoxImgBlog_xamarin-6701.jpg";
 
 			//Conversion en NSURL
 			using (var url = new NSUrl(uri))
@@ -84,6 +87,10 @@ namespace Sample.iOS
 					{
 						image = UIImage.LoadFromData(data);
 					}
+                    else
+                    {
+                        Console.WriteLine(string.Format("Impossible de chargé l'image {0}", url));
+                    }
 				}
 			}
 			//Association l'image à l'ImageView
@@ -226,6 +233,7 @@ namespace Sample.iOS
 
 			var image = LoadImageFromBundle();
 
+            LoadFromBytesArray();
 			LoadFromURL();
 
 			BuildImagePickerAndButtons();
