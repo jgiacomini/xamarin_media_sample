@@ -20,7 +20,6 @@ namespace Sample.iOS
 		private UILabel _numberOfLoopsLabel;
 		private UIStepper _numberOfLoopsSteppers;
 		private UIButton _playSoundButton;
-        private	UIButton _loadPlayerFromDataButton;
         #endregion
 
         public SoundSampleViewController()
@@ -30,6 +29,7 @@ namespace Sample.iOS
 			View.BackgroundColor = UIColor.White;
 			this.EdgesForExtendedLayout = UIRectEdge.None;
 
+            AudioManager.Instance.FinishedPlaying += FinishedPlaying;
             AudioManager.Instance.LoadFromUrl("musique.mp3");
 
 			_playButton = UIButton.FromType(UIButtonType.System);
@@ -45,7 +45,7 @@ namespace Sample.iOS
 
 
 			_stopButton = UIButton.FromType(UIButtonType.System);
-			_stopButton.SetTitle("Stop", UIControlState.Normal);
+			_stopButton.SetTitle("Arrêt", UIControlState.Normal);
 			_stopButton.TouchUpInside += _stopButton_TouchUpInside;
 			_stopButton.Frame = new CGRect(10, 110, View.Bounds.Width - 20, 40);
             _stopButton.Hidden =true;
@@ -57,6 +57,7 @@ namespace Sample.iOS
 
 			_numberOfLoopsLabel = new UILabel();
 			_numberOfLoopsLabel.Frame = new CGRect(10, 200, 80, 40);
+            _numberOfLoopsLabel.Text = AudioManager.Instance.NumberOfLoops.ToString();
 
 			_numberOfLoopsSteppers = new UIStepper();
 			_numberOfLoopsSteppers.MinimumValue = -1;
@@ -64,15 +65,11 @@ namespace Sample.iOS
 			_numberOfLoopsSteppers.Frame = new CGRect(View.Bounds.Width - 20 - 80, 200, 80, 40);
             _numberOfLoopsSteppers.Value = AudioManager.Instance.NumberOfLoops;
 
+
 			_playSoundButton = UIButton.FromType(UIButtonType.System);
 			_playSoundButton.SetTitle("Jouer un bruitage", UIControlState.Normal);
 			_playSoundButton.TouchUpInside += _playSoundButton_TouchUpInside;
 			_playSoundButton.Frame = new CGRect(10, 240, View.Bounds.Width - 20, 40);
-
-			_loadPlayerFromDataButton = UIButton.FromType(UIButtonType.System);
-			_loadPlayerFromDataButton.SetTitle("Charger musique depuis un tableau d'octets", UIControlState.Normal);
-            _loadPlayerFromDataButton.TouchUpInside += _loadPlayerFromDataButton_TouchUpInside;
-			_loadPlayerFromDataButton.Frame = new CGRect(10, 280, View.Bounds.Width - 20, 40);
 
 			View.AddSubviews(_playButton, 
 			                 _pauseButton,
@@ -80,8 +77,7 @@ namespace Sample.iOS
 			                 _volumeSlider,
 			                 _numberOfLoopsSteppers,
 			                 _numberOfLoopsLabel,
-                             _playSoundButton,
-                             _loadPlayerFromDataButton);
+                             _playSoundButton);
 		}
 
 
@@ -99,7 +95,9 @@ namespace Sample.iOS
 		void _playButton_TouchUpInside(object sender, EventArgs e)
 		{
 			AudioManager.Instance.Play();
-            _stopButton.Hidden = false;
+
+			//On masque le bouton "Lecture" et on affiche "Arrêt" et "Pause"
+			_stopButton.Hidden = false;
 			_pauseButton.Hidden = false;
 			_playButton.Hidden = true;
 		}
@@ -107,13 +105,16 @@ namespace Sample.iOS
 		void _pauseButton_TouchUpInside(object sender, EventArgs e)
 		{
 			AudioManager.Instance.Pause();
-            _stopButton.Hidden = false;
+
+			//On masque le bouton "Pause" et on affiche "Arrêt" et "Pause"
 			_pauseButton.Hidden = true;
+			_stopButton.Hidden = false;
 			_playButton.Hidden = false;
 		}
 
 		void _stopButton_TouchUpInside(object sender, EventArgs e)
 		{
+			//On masque les bouton "Arrêt" et "Pause" et on affiche "Lecture"
 			AudioManager.Instance.Stop();
             _stopButton.Hidden = true;
 			_pauseButton.Hidden = true;
@@ -125,17 +126,27 @@ namespace Sample.iOS
 			await TestSoundAsync();
 		}
 
-		void _loadPlayerFromDataButton_TouchUpInside(object sender, EventArgs e)
-		{
-			var bytes = File.ReadAllBytes("musique.mp3");
-            AudioManager.Instance.LoadFromData(bytes);
-		}
-
 		public async Task TestSoundAsync()
 		{
 			NSUrl url = NSUrl.FromFilename("sound.mp3");
 			SystemSound systemSound = new SystemSound(url);
 			await systemSound.PlayAlertSoundAsync();
 		}
+
+
+        public override void ViewWillDisappear(bool animated)
+        {
+            base.ViewWillDisappear(animated);
+            //Quand le viewCOntroller n'est plus affiché on stop la musique
+            AudioManager.Instance.StopAndClean();
+
+            AudioManager.Instance.FinishedPlaying -= FinishedPlaying;
+        }
+
+        void FinishedPlaying()
+        {
+            // Quand la musique est terminée repasse à l'état "arret"
+            _stopButton_TouchUpInside(null, EventArgs.Empty);
+        }
 	}
 }

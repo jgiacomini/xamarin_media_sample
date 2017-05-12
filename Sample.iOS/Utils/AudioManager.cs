@@ -6,14 +6,25 @@ namespace Sample.iOS.Utils
 {
 	public class AudioManager
 	{
-		private static AudioManager _audioManager;
-		private AVAudioPlayer _musicPlayer;
-		private const float _DEFAULT_VOLUME = 1.0f;
-        private const int _DEFAULT_NUMBERS_OF_LOOPS = -1;
+        #region Champs statiques
+        private static AudioManager _audioManager;
+		#endregion
 
-		private AudioManager()
+		#region Champs
+		private AVAudioPlayer _musicPlayer;
+        private string _currentUrl;
+        #endregion
+
+        #region Contstantes 
+        private float _currentVolume = 1.0f;
+        private nint _currentNumbersOfLoops = -1;
+        #endregion
+
+        private AudioManager()
 		{
 		}
+
+        public event Action FinishedPlaying;
 
 		public static AudioManager Instance
 		{
@@ -34,14 +45,18 @@ namespace Sample.iOS.Utils
 			{
 				if (_musicPlayer == null)
 				{
-					return _DEFAULT_VOLUME;
+					return _currentVolume;
 				}
 
 				return _musicPlayer.Volume;
 			}
 			set
 			{
-				_musicPlayer.Volume = value;
+                _currentVolume = value;
+                if (_musicPlayer != null)
+                {
+                    _musicPlayer.Volume = _currentVolume;
+                }
 			}
 		}
 
@@ -51,18 +66,33 @@ namespace Sample.iOS.Utils
 			{
                 if(_musicPlayer == null)
                 {
-                    
+                    return _currentNumbersOfLoops;
                 }
-				return _musicPlayer.NumberOfLoops;
+
+                return _musicPlayer.NumberOfLoops;
 			}
 			set
 			{
-				_musicPlayer.NumberOfLoops = value;
+                _currentNumbersOfLoops = value;
+                if (_musicPlayer == null)
+                {
+                    _musicPlayer.NumberOfLoops = _currentNumbersOfLoops;
+                }
 			}
 		}
 
 		public void Play()
 		{
+            // Si le player n'est pas créé
+            if (_musicPlayer == null)
+            {
+                // Si une URL est définie on charge la musique
+                if (_currentUrl != null)
+                {
+                    LoadFromUrl(_currentUrl);
+                }
+            }
+
 			_musicPlayer?.Play();
 		}
 
@@ -76,57 +106,51 @@ namespace Sample.iOS.Utils
             if (_musicPlayer != null)
             {
                 _musicPlayer.Stop();
+                // On se met au début du fichier audio
                 _musicPlayer.CurrentTime = 0d;
             }
 		}
 
 		public void LoadFromUrl(string url)
 		{
-			DestroyOldPlayer();
+            // Si un player existe on le supprime.
+			StopAndClean();
+
+            // On stoque l'url de la musique courante
+            _currentUrl = url;
+
+            // On transforme l'url en NSURL
 			NSUrl musicURL = NSUrl.FromString(url);
+
+            // On charge le player en fonction de cette URL
 			_musicPlayer = AVAudioPlayer.FromUrl(musicURL);
-			_musicPlayer.Volume = _DEFAULT_VOLUME;
-			_musicPlayer.FinishedPlaying += delegate
-			{
-				_musicPlayer.Dispose();
-				_musicPlayer = null;
-			};
-			// on joue la musique en boucle
-            _musicPlayer.NumberOfLoops = _DEFAULT_NUMBERS_OF_LOOPS;
+			_musicPlayer.Volume = _currentVolume;
+			_musicPlayer.FinishedPlaying += _musicPlayer_FinishedPlaying;
+			
+            // Si le nombre de boucle est égale à -1 la musique est jouée en boucle
+            _musicPlayer.NumberOfLoops = _currentNumbersOfLoops;
 		}
 
-		public void LoadFromData(byte[] bytes)
+        void _musicPlayer_FinishedPlaying(object sender, AVStatusEventArgs args)
+        {
+            StopAndClean();
+
+            if (FinishedPlaying != null)
+            {
+                FinishedPlaying();
+            }
+        }
+
+        public void StopAndClean()
 		{
-			DestroyOldPlayer();
-
-			using (NSData data = NSData.FromArray(bytes))
-			{
-				// Si celui arrive à se charger on crée le player audio
-				if (data != null)
-				{
-					_musicPlayer = AVAudioPlayer.FromData(data);
-				}
-				else
-				{
-					Console.WriteLine("Impossible de chargé le fichier audio");
-				}
-			}
-
-			_musicPlayer.Volume = _DEFAULT_VOLUME;
-			_musicPlayer.FinishedPlaying += delegate
-			{
-				_musicPlayer.Dispose();
-				_musicPlayer = null;
-			};
-			_musicPlayer.NumberOfLoops = _DEFAULT_NUMBERS_OF_LOOPS;
-		}
-
-		private void DestroyOldPlayer()
-		{
+            
 			if (_musicPlayer != null)
 			{
-				_musicPlayer?.Stop();
-				_musicPlayer?.Dispose();
+                // On stoppe la musique courante
+				_musicPlayer.Stop();
+                //Puis on détruit le player
+				_musicPlayer.Dispose();
+                _musicPlayer = null;
 			}
 		}
 	}
