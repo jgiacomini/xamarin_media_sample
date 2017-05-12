@@ -9,6 +9,7 @@ namespace Sample.iOS
 
 		private UIButton _loadImageButton;
 		private UIButton _soundButton;
+		private UIButton _recordSoundButton;
 		private UIButton _videoButton;
 
 
@@ -30,11 +31,17 @@ namespace Sample.iOS
 			_soundButton.TouchUpInside += _soundButton_TouchUpInside;
 			_soundButton.Frame = new CGRect(10, 60, View.Bounds.Width - 20, 40);
 
+            
+            _recordSoundButton = UIButton.FromType(UIButtonType.System);
+            _recordSoundButton.SetTitle("Vidéo", UIControlState.Normal);
+            _recordSoundButton.TouchUpInside += _recordSoundButton_TouchUpInside;
+            _recordSoundButton.Frame = new CGRect(10, 110, View.Bounds.Width - 20, 40);
+
 
 			_videoButton = UIButton.FromType(UIButtonType.System);
 			_videoButton.SetTitle("Vidéo", UIControlState.Normal);
 			_videoButton.TouchUpInside += _videoButton_TouchUpInside;
-			_videoButton.Frame = new CGRect(10, 110, View.Bounds.Width - 20, 40);
+			_videoButton.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 40);
 
 
 			View.AddSubviews(_loadImageButton, _soundButton, _videoButton);
@@ -46,6 +53,11 @@ namespace Sample.iOS
 		}
 
 		void _soundButton_TouchUpInside(object sender, EventArgs e)
+		{
+			this.NavigationController.PushViewController(new SoundSampleViewController(), true);
+		}
+
+		void _recordSoundButton_TouchUpInside(object sender, EventArgs e)
 		{
 			this.NavigationController.PushViewController(new SoundSampleViewController(), true);
 		}
