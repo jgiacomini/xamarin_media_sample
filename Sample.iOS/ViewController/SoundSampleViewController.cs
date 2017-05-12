@@ -5,35 +5,32 @@ using AudioToolbox;
 using AVFoundation;
 using CoreGraphics;
 using Foundation;
+using Sample.iOS.Utils;
 using UIKit;
 
 namespace Sample.iOS
 {
-	public class SoundSampleViewController : UIViewController
+    public class SoundSampleViewController : UIViewController
 	{
-		private AVAudioPlayer _musicPlayer;
-		private UIButton _playButton;
+        #region Champs
+        private UIButton _playButton;
 		private UIButton _pauseButton;
 		private UIButton _stopButton;
 		private UISlider _volumeSlider;
 		private UILabel _numberOfLoopsLabel;
 		private UIStepper _numberOfLoopsSteppers;
-        private UIButton _loadPlayerFromDataButton;
+		private UIButton _playSoundButton;
+        private	UIButton _loadPlayerFromDataButton;
+        #endregion
 
-		private float _defaultVolume = 1.0f;
-
-		public SoundSampleViewController()
+        public SoundSampleViewController()
 		{
 			Title = "Sound sample";
 
 			View.BackgroundColor = UIColor.White;
 			this.EdgesForExtendedLayout = UIRectEdge.None;
-			LoadPlayerFromUrl();
 
-			// Initialize Audio
-			var session = AVAudioSession.SharedInstance();
-			session.SetCategory(AVAudioSessionCategory.Ambient);
-			session.SetActive(true);
+            AudioManager.Instance.LoadFromUrl("musique.mp3");
 
 			_playButton = UIButton.FromType(UIButtonType.System);
 			_playButton.SetTitle("Lecture", UIControlState.Normal);
@@ -42,19 +39,21 @@ namespace Sample.iOS
 
 			_pauseButton = UIButton.FromType(UIButtonType.System);
 			_pauseButton.SetTitle("Pause", UIControlState.Normal);
-			_pauseButton.TouchUpInside += _pauseButton_TouchUpInside;;
+			_pauseButton.TouchUpInside += _pauseButton_TouchUpInside;
 			_pauseButton.Frame = new CGRect(10, 60, View.Bounds.Width - 20, 40);
+            _pauseButton.Hidden = true;
 
 
 			_stopButton = UIButton.FromType(UIButtonType.System);
 			_stopButton.SetTitle("Stop", UIControlState.Normal);
 			_stopButton.TouchUpInside += _stopButton_TouchUpInside;
 			_stopButton.Frame = new CGRect(10, 110, View.Bounds.Width - 20, 40);
+            _stopButton.Hidden =true;
 
 			_volumeSlider = new UISlider();
 			_volumeSlider.ValueChanged += _volumeSlider_ValueChanged;	
 			_volumeSlider.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 40);
-			_volumeSlider.Value = _defaultVolume;
+            _volumeSlider.Value = AudioManager.Instance.Volume;
 
 			_numberOfLoopsLabel = new UILabel();
 			_numberOfLoopsLabel.Frame = new CGRect(10, 200, 80, 40);
@@ -63,11 +62,17 @@ namespace Sample.iOS
 			_numberOfLoopsSteppers.MinimumValue = -1;
 			_numberOfLoopsSteppers.ValueChanged += _numberOfLoopsSteppers_ValueChanged;
 			_numberOfLoopsSteppers.Frame = new CGRect(View.Bounds.Width - 20 - 80, 200, 80, 40);
+            _numberOfLoopsSteppers.Value = AudioManager.Instance.NumberOfLoops;
+
+			_playSoundButton = UIButton.FromType(UIButtonType.System);
+			_playSoundButton.SetTitle("Jouer un bruitage", UIControlState.Normal);
+			_playSoundButton.TouchUpInside += _playSoundButton_TouchUpInside;
+			_playSoundButton.Frame = new CGRect(10, 240, View.Bounds.Width - 20, 40);
 
 			_loadPlayerFromDataButton = UIButton.FromType(UIButtonType.System);
 			_loadPlayerFromDataButton.SetTitle("Charger musique depuis un tableau d'octets", UIControlState.Normal);
             _loadPlayerFromDataButton.TouchUpInside += _loadPlayerFromDataButton_TouchUpInside;
-			_loadPlayerFromDataButton.Frame = new CGRect(10, 240, View.Bounds.Width - 20, 40);
+			_loadPlayerFromDataButton.Frame = new CGRect(10, 280, View.Bounds.Width - 20, 40);
 
 			View.AddSubviews(_playButton, 
 			                 _pauseButton,
@@ -75,83 +80,62 @@ namespace Sample.iOS
 			                 _volumeSlider,
 			                 _numberOfLoopsSteppers,
 			                 _numberOfLoopsLabel,
+                             _playSoundButton,
                              _loadPlayerFromDataButton);
 		}
 
-		void _volumeSlider_ValueChanged(object sender, EventArgs e)
-		{
-			_musicPlayer.Volume = _volumeSlider.Value;
-		}
-
-		void _playButton_TouchUpInside(object sender, EventArgs e)
-		{
-			_musicPlayer.Play();
-		}
-
-		void _pauseButton_TouchUpInside(object sender, EventArgs e)
-		{
-			_musicPlayer.Pause();
-		}
-
-		async void _stopButton_TouchUpInside(object sender, EventArgs e)
-		{
-			_musicPlayer.Stop();
-			await TestSoundAsync();
-		}
 
 		void _numberOfLoopsSteppers_ValueChanged(object sender, EventArgs e)
 		{
 			_numberOfLoopsLabel.Text = _numberOfLoopsSteppers.Value.ToString();
-			_musicPlayer.NumberOfLoops = (nint)_numberOfLoopsSteppers.Value;
+            AudioManager.Instance.NumberOfLoops = (nint)_numberOfLoopsSteppers.Value;
 		}
 
-        void _loadPlayerFromDataButton_TouchUpInside(object sender, EventArgs e)
-        {
-            _musicPlayer?.Stop();
-            _musicPlayer?.Dispose();
-            LoadPlayerFromData();
-        }
-
-		void LoadPlayerFromUrl()
+		void _volumeSlider_ValueChanged(object sender, EventArgs e)
 		{
-			NSUrl musicURL = NSUrl.FromString("musique.mp3");
-			_musicPlayer = AVAudioPlayer.FromUrl(musicURL);
-            _musicPlayer.Volume = _defaultVolume;
-			_musicPlayer.FinishedPlaying += delegate
-			{	
-				_musicPlayer.Dispose();
-				_musicPlayer = null;
-			};
-			_musicPlayer.NumberOfLoops = -1;
+            AudioManager.Instance.Volume = _volumeSlider.Value;
 		}
 
-		void LoadPlayerFromData()
+		void _playButton_TouchUpInside(object sender, EventArgs e)
 		{
-            var bytes = File.ReadAllBytes("musique.mp3");
-
-			using (NSData data = NSData.FromArray(bytes))
-			{
-				// Si celui arrive à se charger on crée l'image
-				if (data != null)
-				{
-                    _musicPlayer = AVAudioPlayer.FromData(data);
-				}
-			}
-
-			_musicPlayer.Volume = _defaultVolume;
-			_musicPlayer.FinishedPlaying += delegate
-			{
-				_musicPlayer.Dispose();
-				_musicPlayer = null;
-			};
-			_musicPlayer.NumberOfLoops = -1;
+			AudioManager.Instance.Play();
+            _stopButton.Hidden = false;
+			_pauseButton.Hidden = false;
+			_playButton.Hidden = true;
 		}
 
-		async Task TestSoundAsync()
+		void _pauseButton_TouchUpInside(object sender, EventArgs e)
 		{
-			NSUrl url = NSUrl.FromFilename ("sound.mp3");
+			AudioManager.Instance.Pause();
+            _stopButton.Hidden = false;
+			_pauseButton.Hidden = true;
+			_playButton.Hidden = false;
+		}
+
+		void _stopButton_TouchUpInside(object sender, EventArgs e)
+		{
+			AudioManager.Instance.Stop();
+            _stopButton.Hidden = true;
+			_pauseButton.Hidden = true;
+            _playButton.Hidden = false;
+		}
+
+		async void _playSoundButton_TouchUpInside(object sender, EventArgs e)
+		{
+			await TestSoundAsync();
+		}
+
+		void _loadPlayerFromDataButton_TouchUpInside(object sender, EventArgs e)
+		{
+			var bytes = File.ReadAllBytes("musique.mp3");
+            AudioManager.Instance.LoadFromData(bytes);
+		}
+
+		public async Task TestSoundAsync()
+		{
+			NSUrl url = NSUrl.FromFilename("sound.mp3");
 			SystemSound systemSound = new SystemSound(url);
-			await systemSound.PlayAlertSoundAsync ();
+			await systemSound.PlayAlertSoundAsync();
 		}
 	}
 }

@@ -92,6 +92,7 @@
     <Compile Include="ViewController\SoundSampleViewController.cs" />
     <Compile Include="ViewController\VideoSampleViewController.cs" />
     <Compile Include="ViewController\ImageSampleViewController.cs" />
+    <Compile Include="Utils\AudioManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
@@ -107,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewController\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\MonImage.jpg" />
