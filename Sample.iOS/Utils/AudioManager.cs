@@ -1,7 +1,6 @@
 ﻿using System;
 using AVFoundation;
 using Foundation;
-using UIKit;
 
 namespace Sample.iOS.Utils
 {
