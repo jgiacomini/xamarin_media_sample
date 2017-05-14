@@ -33,7 +33,7 @@ namespace Sample.iOS
 
             
             _recordSoundButton = UIButton.FromType(UIButtonType.System);
-            _recordSoundButton.SetTitle("Vidéo", UIControlState.Normal);
+            _recordSoundButton.SetTitle("Enregistrer un son", UIControlState.Normal);
             _recordSoundButton.TouchUpInside += _recordSoundButton_TouchUpInside;
             _recordSoundButton.Frame = new CGRect(10, 110, View.Bounds.Width - 20, 40);
 
@@ -44,7 +44,7 @@ namespace Sample.iOS
 			_videoButton.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 40);
 
 
-			View.AddSubviews(_loadImageButton, _soundButton, _videoButton);
+            View.AddSubviews(_loadImageButton, _soundButton, _recordSoundButton,_videoButton);
 		}
 
 		void _imageButton_TouchUpInside(object sender, EventArgs e)
@@ -59,7 +59,7 @@ namespace Sample.iOS
 
 		void _recordSoundButton_TouchUpInside(object sender, EventArgs e)
 		{
-			this.NavigationController.PushViewController(new SoundSampleViewController(), true);
+			this.NavigationController.PushViewController(new RecordSoundSampleViewController(), true);
 		}
 
 		void _videoButton_TouchUpInside(object sender, EventArgs e)

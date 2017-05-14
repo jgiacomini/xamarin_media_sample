@@ -142,7 +142,7 @@ namespace Sample.iOS
         public override void ViewWillDisappear(bool animated)
         {
             base.ViewWillDisappear(animated);
-            //Quand le viewController n'est plus affiché on stop la musique
+            //Quand le viewController n'est plus affiché on stoppe la musique
             AudioManager.Instance.StopAndDispose();
             FinishedPlaying();
             AudioManager.Instance.FinishedPlaying -= FinishedPlaying;

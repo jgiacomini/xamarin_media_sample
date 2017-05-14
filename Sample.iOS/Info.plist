@@ -46,5 +46,7 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Cette application nécessite l&apos;accès à votre microphone</string>
 </dict>
 </plist>

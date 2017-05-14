@@ -93,6 +93,7 @@
     <Compile Include="ViewController\VideoSampleViewController.cs" />
     <Compile Include="ViewController\ImageSampleViewController.cs" />
     <Compile Include="Utils\AudioManager.cs" />
+    <Compile Include="ViewController\RecordSoundSampleViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />

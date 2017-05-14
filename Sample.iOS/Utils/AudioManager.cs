@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AVFoundation;
 using Foundation;
 
@@ -88,10 +89,25 @@ namespace Sample.iOS.Utils
                 {
                     LoadFromUrl(_currentUrl);
                 }
+                else
+                {
+                    _tcsPlay?.SetResult(false);
+                }
             }
 
 			_musicPlayer?.Play();
+
 		}
+
+        TaskCompletionSource<bool> _tcsPlay;
+
+        public Task PlayAsync()
+        {
+            _tcsPlay = new TaskCompletionSource<bool>();
+            Play();
+
+            return _tcsPlay.Task;
+        }
 
 		public void Pause()
 		{
@@ -136,6 +152,8 @@ namespace Sample.iOS.Utils
         void _musicPlayer_FinishedPlaying(object sender, AVStatusEventArgs args)
         {
             Stop();
+
+            _tcsPlay?.SetResult(true);
 
             if (FinishedPlaying != null)
             {
