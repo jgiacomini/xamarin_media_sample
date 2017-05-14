@@ -115,6 +115,7 @@
     <BundleResource Include="Resources\MonImage.jpg" />
     <BundleResource Include="Resources\musique.mp3" />
     <BundleResource Include="Resources\sound.mp3" />
+    <BundleResource Include="Resources\video.m4v" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
